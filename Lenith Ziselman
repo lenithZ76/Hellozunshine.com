@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal | Apex Collegiate Strategy Group</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1a365d;
+            --accent-blue: #2b6cb0;
+            --bg-light: #f7fafc;
+            --text-dark: #2d3748;
+            --border-color: #e2e8f0;
+            --success-green: #38a169;
+            --warning-orange: #dd6b20;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+
+        /* Top Notification Bar */
+        .system-banner {
+            background-color: #2d3748;
+            color: #fff;
+            text-align: center;
+            padding: 8px 10px;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--accent-blue);
+        }
+
+        /* Header Navigation */
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            color: var(--primary-blue);
+            font-size: 1.8rem;
+        }
+
+        .logo-text h1 {
+            font-size: 1.2rem;
+            color: var(--primary-blue);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .logo-text p {
+            font-size: 0.7rem;
+            color: #718096;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .account-badge {
+            background-color: #edf2f7;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Main Layout */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Profile Snapshot & Cards */
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            color: var(--primary-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid var(--bg-light);
+            padding-bottom: 10px;
+        }
+
+        /* Metrics Graph Layout */
+        .chart-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .metric-row {
+            display: grid;
+            grid-template-columns: 140px 1fr 40px;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #4a5568;
+        }
+
+        .bar-wrapper {
+            background-color: #edf2f7;
+            border-radius: 4px;
+            height: 24px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bar-initial {
+            background-color: #cbd5e0;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: width 1s ease;
+        }
+
+        .bar-target {
+            background: linear-gradient(90deg, var(--accent-blue), var(--primary-blue));
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: width 1s ease;
+        }
+
+        .metric-value {
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-align: right;
+            color: var(--primary-blue);
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            font-size: 0.8rem;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dot-initial { height: 10px; width: 10px; background-color: #cbd5e0; border-radius: 50%; }
+        .dot-target { height: 10px; width: 10px; background-color: var(--accent-blue); border-radius: 50%; }
+
+        /* Modules Data Ledger Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th {
+            background-color: var(--primary-blue);
+            color: #fff;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            padding: 12px 10px;
+            text-align: left;
+        }
+
+        td {
+            padding: 14px 10px;
+            font-size: 0.85rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:hover {
+            background-color: #f7fafc;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-pending { background-color: #fffaf0; color: var(--warning-orange); border: 1px solid #feebc8; }
+        .status-verified { background-color: #f0fff4; color: var(--success-green); border: 1px solid #c6f6d5; }
+
+        /* Interactive Homework Section */
+        .homework-box {
+            background-color: var(--bg-light);
+            border-left: 4px solid var(--accent-blue);
+            padding: 15px;
+            border-radius: 0 4px 4px 0;
+            margin-bottom: 15px;
+        }
+
+        .homework-box h4 {
+            font-size: 0.9rem;
+            color: var(--primary-blue);
+            margin-bottom: 5px;
+        }
+
+        .homework-box p {
+            font-size: 0.8rem;
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 60px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            resize: vertical;
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            background-color: var(--accent-blue);
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-blue);
+        }
+
+        /* Rewards Panel */
+        .reward-item {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+            padding: 15px 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .reward-item:last-child {
+            border-bottom: none;
+        }
+
+        .reward-icon {
+            background-color: #ebf8ff;
+            color: var(--accent-blue);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+        }
+
+        .reward-details h4 {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        .reward-details p {
+            font-size: 0.8rem;
+            color: #718096;
+        }
+
+        /* System Info Sidebar box */
+        .sys-info {
+            font-size: 0.8rem;
+            color: #718096;
+        }
+        .sys-info li {
+            margin-bottom: 8px;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+        }
+        .sys-info span {
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Security Banner -->
+    <div class="system-banner">
+        <i class="fa-solid fa-shield-halved"></i> Secured Algorithmic Connection // Apex Admissions Matrix Active
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="logo-area">
+            <i class="fa-solid fa-triangle-exclamation logo-icon" style="transform: rotate(180deg);"></i>
+            <div class="logo-text">
+                <h1>Apex Collegiate</h1>
+                <p>Admissions Logistics & Resourcing</p>
+            </div>
+        </div>
+        <div class="account-badge">
+            File Locked: #FL-9495-ZIS
+        </div>
+    </header>
+
+    <!-- Content Engine -->
+    <div class="container">
+        
+        <!-- Main Left Content Block -->
+        <main>
+            
+            <!-- Strategic Graphic Section -->
+            <div class="card">
+                <div class="card-title">
+                    <i class="fa-solid fa-chart-line"></i> Proprietary Competitive Advantage Metrics
+                </div>
+                <p style="font-size: 0.85rem; color:#718096; margin-bottom: 20px;">
+                    This real data matrix contrasts standard, traditional high school application metrics against the custom portfolio tracks assigned to your platform architecture.
+                </p>
+                
+                <div class="chart-container">
+                    <!-- Metric 1 -->
+                    <div class="metric-row">
+                        <div class="metric-label">Economic Autonomy</div>
+                        <div class="bar-wrapper">
+                            <div class="bar-target" style="width: 75%;"></div>
+                            <div class="bar-initial" style="width: 10%;"></div>
+                        </div>
+                        <div class="metric-value">75%</div>
+                    </div>
+                    <!-- Metric 2 -->
+                    <div class="metric-row">
+                        <div class="metric-label">Execution Mastery</div>
+                        <div class="bar-wrapper">
+                            <div class="bar-target" style="width: 90%;"></div>
+                            <div class="bar-initial" style="width: 15%;"></div>
+                        </div>
+                        <div class="metric-value">90%</div>
+                    </div>
+                    <!-- Metric 3 -->
+                    <div class="metric-row">
+                        <div class="metric-label">Institutional Impact</div>
+                        <div class="bar-wrapper">
+                            <div class="bar-target" style="width: 75%;"></div>
+                            <div class="bar-initial" style="width: 5%;"></div>
+                        </div>
+                        <div class="metric-value">75%</div>
+                    </div>
+                    <!-- Metric 4 -->
+                    <div class="metric-row">
+                        <div class="metric-label">Global Perspective</div>
+                        <div class="bar-wrapper">
+                            <div class="bar-target" style="width: 100%;"></div>
+                            <div class="bar-initial" style="width: 25%;"></div>
+                        </div>
+                        <div class="metric-value">100%</div>
+                    </div>
+                </div>
+
+                <div class="chart-legend">
+                    <div class="legend-item"><div class="dot-initial"></div> Initial Profile (Standard Applicant)</div>
+                    <div class="legend-item"><div class="dot-target"></div> Apex Targeted Profile Weight</div>
+                </div>
+            </div>
+
+            <!-- Program Ledger Table -->
+            <div class="card">
+                <div class="card-title">
+                    <i class="fa-solid fa-list-check"></i> Module Control Ledger
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Pillar Block</th>
+                            <th>Verification Metric</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><b>MOD-01</b></td>
+                            <td>Family Accountability Compact[span_0](start_span)[span_0](end_span)[span_1](start_span)[span_1](end_span)</td>
+                            <td>Signed Master Contract Document[span_2](start_span)[span_2](end_span)[span_3](start_span)[span_3](end_span)</td>
+                            <td><span class="status-badge status-pending">Pending Upload</span></td>
+                        </tr>
+                        <tr>
+                            <td><b>MOD-02</b></td>
+                            <td>Sports Media Agency Operations[span_4](start_span)[span_4](end_span)</td>
+                            <td>5-Frame Action Lookbook Assessment[span_5](start_span)[span_5](end_span)</td>
+                            <td><span class="status-badge status-pending">Pending Data</span></td>
+                        </tr>
+                        <tr>
+                            <td><b>MOD-03</b></td>
+                            <td>Latin-Gospel Ensemble Architecture[span_6](start_span)[span_6](end_span)</td>
+                            <td>5-Track Rhythmic Adaptation Mapping[span_7](start_span)[span_7](end_span)</td>
+                            <td><span class="status-badge status-pending">Pending Data</span></td>
+                        </tr>
+                        <tr>
+                            <td><b>MOD-04</b></td>
+                            <td>Campus UNESCO Club Charter[span_8](start_span)[span_8](end_span)</td>
+                            <td>Faculty Sponsor Identification Match[span_9](start_span)[span_9](end_span)</td>
+                            <td><span class="status-badge status-pending">Pending Entry</span></td>
+                        </tr>
+                        <tr>
+                            <td><b>MOD-05</b></td>
+                            <td>August South Korea Capstone[span_10](start_span)[span_10](end_span)</td>
+                            <td>Pre-Trip Global Research Frame Draft[span_11](start_span)[span_11](end_span)</td>
+                            <td><span class="status-badge status-pending">Pending Link</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Interactive Onboarding Challenges -->
+            <div class="card">
+                <div class="card-title">
+                    <i class="fa-solid fa-code-branch"></i> Active Summer Assignment Modules
+                </div>
+
+                <!-- Assignment 1 -->
+                <div class="homework-box">
+                    <h4>Module 02 Assessment: High-Speed Sports Shutter Focus[span_12](start_span)[span_12](end_span)</h4>
+                    <p>Execute a 100-frame fast-motion test at an amateur athletic field[span_13](start_span)[span_13](end_span). Input the location, hardware layout, and select your top 5 targeted image markers here[span_14](start_span)[span_14](end_span).</p>
+                    <textarea placeholder="Log capture details, exposure numbers, and descriptions of selected action shots..."></textarea>
+                    <button class="btn" onclick="alert('Secure Data Transmission Hook: Parent sponsorship approval required to authorize portal sync.')">Transmit Portfolio Data</button>
+                </div>
+
+                <!-- Assignment 2 -->
+                <div class="homework-box">
+                    <h4>Module 03 Assessment: Latin-Gospel Repertoire Layout[span_15](start_span)[span_15](end_span)</h4>
+                    <p>Input your 5 curated church/praise selections along with your rhythm blueprints (Cumbia, Vallenato, Rock) and target band section candidates[span_16](start_span)[span_16](end_span)[span_17](start_span)[span_17](end_span).</p>
+                    <textarea placeholder="Track 1: Title - Rhythm Arrangement Plan..."></textarea>
+                    <button class="btn" onclick="alert('Secure Data Transmission Hook: Parent sponsorship approval required to authorize portal sync.')">Transmit Sonic Data</button>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Sidebar Right Column Content Block -->
+        <aside>
+            
+            <!-- File Metrics Info Box -->
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-folder-open"></i> Matrix Diagnostics</div>
+                <ul class="sys-info">
+                    <li>Placement Level: <span>Ivy-Tier Target</span></li>
+                    <li>Timeline Focus: <span>Pre-Sophomore Start</span></li>
+                    <li>System Balance: <span>Compliant</span></li>
+                    <li>Hard Nightly Shutdown: <span>20:30 EST Lockout</span></li>
+                </ul>
+            </div>
+
+            <!-- Milestone Rewards System -->
+            <div class="card">
+                <div class="card-title"><i class="fa-solid fa-award"></i> Verification Rewards</div>
+                
+                <div class="reward-item">
+                    <div class="reward-icon"><i class="fa-solid fa-camera"></i></div>
+                    <div class="reward-details">
+                        <h4>Tier-1 Business Unlock</h4>
+                        <p>Secure 1 active retainer client for 30 consecutive days to unlock private work autonomy and gear funding[span_18](start_span)[span_18](end_span)[span_19](start_span)[span_19](end_span).</p>
+                    </div>
+                </div>
+
+                <div class="reward-item">
+                    <div class="reward-icon"><i class="fa-solid fa-shirt"></i></div>
+                    <div class="reward-details">
+                        <h4>Tier-2 Leadership Unlock</h4>
+                        <p>Complete 4 structural weeks of SAT modules and lock in your UNESCO sponsor to unlock Wardrobe Upgrades[span_20](start_span)[span_20](end_span).</p>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+    </div>
+
+</body>
+</html>
